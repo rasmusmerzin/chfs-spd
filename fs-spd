@@ -1,0 +1,49 @@
+#!/usr/bin/env python3
+
+import os, sys, time, signal
+
+
+def exit(sig, frame):
+    global filename
+    os.system("rm " +filename +"*")
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, exit)
+
+
+def output(title, chunk_size, elapsed, speed):
+    color = title.lower() == "wrote" and "\033[33m" or "\033[32m"
+    print(("{:6s} {:4d} MiB in {:5.2f} s ::: " +color +"{:7.2f}\033[0m MiB/s").format(title, chunk_size, elapsed, speed))
+
+
+
+sizes = [128, 512, 1024]
+chunk = "0" *1024 *1024     # 1 MiB
+
+
+templ = "dump_fs-spd-test-"
+filename = templ
+
+for i in sizes:
+    filename = templ +str(i)
+
+
+    start = time.time()
+    with open(filename, "w") as f: f.write(chunk *i)
+    end = time.time()
+
+
+    elapsed = end -start
+    output("Wrote", i, elapsed, i /elapsed)
+
+    start = time.time()
+    with open(filename, "r") as f: f.read()
+    end = time.time()
+
+
+    elapsed = end -start
+    print("  ", end="")
+    output("Read", i, elapsed, i /elapsed)
+
+
+    os.system("rm " +filename)
