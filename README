@@ -1,1 +1,2 @@
 fs-spd -- run in filesystem you wish to speed check
+  python file will create various dump files and measure time spent creating and reading them.
